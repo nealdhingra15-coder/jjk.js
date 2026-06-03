@@ -1,4 +1,4 @@
-// ========== SAFE GLOBAL INPUT ==========
+// ========== INPUT ==========
 window.KA = false;
 window.KD = false;
 window.KW = false;
@@ -21,9 +21,9 @@ document.onkeyup = (e) => {
     if (e.key === "h") KH = false;
 };
 
-// ========== ELEMENTS ==========
+// ========== SAFE ELEMENTS ==========
 
-// Infinity barrier (safe)
+// Infinity barrier
 elements.gojo_infinity = {
     color: "#ffffff",
     state: "solid",
@@ -32,7 +32,7 @@ elements.gojo_infinity = {
     density: 999999
 };
 
-// Purple energy (safe)
+// Hollow purple
 elements.hollow_purple = {
     color: "#aa00ff",
     state: "gas",
@@ -43,7 +43,7 @@ elements.hollow_purple = {
     ]
 };
 
-// Gojo player
+// Gojo
 elements.gojo = {
     color: "#66ccff",
     state: "solid",
