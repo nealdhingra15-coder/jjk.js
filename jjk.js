@@ -1,84 +1,81 @@
-// =====================
-// KEYBOARD CONTROLS
-// =====================
+// ========== SAFE GLOBAL INPUT ==========
+window.KA = false;
+window.KD = false;
+window.KW = false;
+window.KS = false;
+window.KH = false;
 
-var KA = false;
-var KD = false;
-var KW = false;
-var KS = false;
-
-document.onkeydown = function(e) {
-    if(e.keyCode === 65) KA = true; // A
-    if(e.keyCode === 68) KD = true; // D
-    if(e.keyCode === 87) KW = true; // W
-    if(e.keyCode === 83) KS = true; // S
+document.onkeydown = (e) => {
+    if (e.key === "a") KA = true;
+    if (e.key === "d") KD = true;
+    if (e.key === "w") KW = true;
+    if (e.key === "s") KS = true;
+    if (e.key === "h") KH = true;
 };
 
-document.onkeyup = function(e) {
-    if(e.keyCode === 65) KA = false;
-    if(e.keyCode === 68) KD = false;
-    if(e.keyCode === 87) KW = false;
-    if(e.keyCode === 83) KS = false;
+document.onkeyup = (e) => {
+    if (e.key === "a") KA = false;
+    if (e.key === "d") KD = false;
+    if (e.key === "w") KW = false;
+    if (e.key === "s") KS = false;
+    if (e.key === "h") KH = false;
 };
 
-// =====================
-// INFINITY SHIELD
-// =====================
+// ========== ELEMENTS ==========
 
-elements.infinity_shield = {
-    color: "rgba(0,0,0,0)",
-    hidden: true,
-    category: "special",
+// Infinity barrier (safe)
+elements.gojo_infinity = {
+    color: "#ffffff",
     state: "solid",
+    behavior: behaviors.WALL,
     hardness: 999999,
-    density: 999999,
-    tick: function(pixel) {
-        pixel.temp = 20;
-    }
+    density: 999999
 };
 
-// =====================
-// GOJO
-// =====================
+// Purple energy (safe)
+elements.hollow_purple = {
+    color: "#aa00ff",
+    state: "gas",
+    behavior: [
+        "EX:20>plasma|EX:20>plasma|EX:20>plasma",
+        "M1|XX|M1",
+        "EX:20>plasma|EX:20>plasma|EX:20>plasma"
+    ]
+};
 
+// Gojo player
 elements.gojo = {
-    name: "Gojo",
     color: "#66ccff",
-    category: "special",
     state: "solid",
-    density: 1000,
 
-    tick: function(pixel) {
+    tick(pixel) {
 
-        // WASD movement
-        if(KA) tryMove(pixel,pixel.x-1,pixel.y);
-        if(KD) tryMove(pixel,pixel.x+1,pixel.y);
-        if(KW) tryMove(pixel,pixel.x,pixel.y-1);
-        if(KS) tryMove(pixel,pixel.x,pixel.y+1);
+        if (KA) tryMove(pixel, pixel.x - 1, pixel.y);
+        if (KD) tryMove(pixel, pixel.x + 1, pixel.y);
+        if (KW) tryMove(pixel, pixel.x, pixel.y - 1);
+        if (KS) tryMove(pixel, pixel.x, pixel.y + 1);
 
-        // Self movement when idle
-        if(!KA && !KD && !KW && !KS) {
-            if(Math.random() < 0.25) {
-                tryMove(pixel,pixel.x+(Math.random()<0.5?-1:1),pixel.y);
+        const ring = [
+            [-1,-1],[0,-1],[1,-1],
+            [-1,0],[1,0],
+            [-1,1],[0,1],[1,1]
+        ];
+
+        for (let i = 0; i < ring.length; i++) {
+            let dx = ring[i][0];
+            let dy = ring[i][1];
+
+            if (isEmpty(pixel.x + dx, pixel.y + dy)) {
+                createPixel("gojo_infinity", pixel.x + dx, pixel.y + dy);
             }
         }
 
-        // Infinity Barrier
-
-        for(var dx=-1; dx<=1; dx++) {
-            for(var dy=-1; dy<=1; dy++) {
-
-                if(dx === 0 && dy === 0) continue;
-
-                var x = pixel.x + dx;
-                var y = pixel.y + dy;
-
-                if(isEmpty(x,y)) {
-                    createPixel("infinity_shield",x,y);
+        if (KH) {
+            for (let i = 1; i < 15; i++) {
+                if (isEmpty(pixel.x + i, pixel.y)) {
+                    createPixel("hollow_purple", pixel.x + i, pixel.y);
                 }
             }
         }
     }
 };
-
-console.log("GOJO MOD LOADED");
